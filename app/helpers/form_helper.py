@@ -1,4 +1,6 @@
 from collections import OrderedDict
+from uuid import uuid4
+
 from structlog import get_logger
 from werkzeug.datastructures import MultiDict
 
@@ -34,6 +36,8 @@ def get_form_for_location(schema, block_json, location, answer_store, metadata, 
 
         return generate_household_composition_form(schema, block_json, data, metadata, location.group_instance)
 
+    group_instance_id = get_group_instance_id(schema, answer_store, location)
+
     if location.block_id in ['relationships', 'household-relationships']:
         answer_ids = schema.get_answer_ids_for_block(location.block_id)
         answers = answer_store.filter(answer_ids, location.group_instance)
@@ -42,14 +46,14 @@ def get_form_for_location(schema, block_json, location, answer_store, metadata, 
 
         relationship_choices = build_relationship_choices(answer_store, location.group_instance)
 
-        form = generate_relationship_form(schema, block_json, relationship_choices, data, location.group_instance)
+        form = generate_relationship_form(schema, block_json, relationship_choices, data, location.group_instance, group_instance_id)
 
         return form
 
     mapped_answers = get_mapped_answers(
         schema,
         answer_store,
-        group_instance=location.group_instance,
+        group_instance_id=group_instance_id,
         block_id=location.block_id,
     )
 
@@ -76,7 +80,8 @@ def post_form_for_location(schema, block_json, location, answer_store, metadata,
 
     if location.block_id in ['relationships', 'household-relationships']:
         relationship_choices = build_relationship_choices(answer_store, location.group_instance)
-        form = generate_relationship_form(schema, block_json, relationship_choices, request_form, location.group_instance)
+        group_instance_id = get_group_instance_id(schema, answer_store, location)
+        form = generate_relationship_form(schema, block_json, relationship_choices, request_form, location.group_instance, group_instance_id)
 
         return form
 
@@ -114,7 +119,7 @@ def clear_other_text_field(data, questions_for_block):
     return form_data
 
 
-def get_mapped_answers(schema, answer_store, block_id, group_instance):
+def get_mapped_answers(schema, answer_store, block_id, group_instance_id):
     """
     Maps the answers in an answer store to a dictionary of key, value answers. Keys include instance
     id's when the instance id is non zero.
@@ -130,10 +135,53 @@ def get_mapped_answers(schema, answer_store, block_id, group_instance):
 
     result = {}
     for answer in answer_store.filter(answer_ids=answer_ids,
-                                      group_instance=group_instance):
+                                      group_instance_id=group_instance_id):
         answer_id = answer['answer_id']
         answer_id += '_' + str(answer['answer_instance']) if answer['answer_instance'] > 0 else ''
 
         result[answer_id] = answer['value']
 
     return OrderedDict(sorted(result.items(), key=lambda t: natural_order(t[0])))
+
+
+def get_group_instance_id(schema, answer_store, location):
+    repeat_rule = _get_group_repeat_rule(schema, location)
+    if repeat_rule:
+        group_instance_ids = []
+        for group_id in repeat_rule['group_ids']:
+            group_answer_ids = schema.get_answer_ids_for_group(group_id)
+            group_instance_ids += _get_group_instance_ids(answer_store, group_answer_ids)
+
+        return group_instance_ids[location.group_instance]
+
+    group_answer_ids = schema.get_answer_ids_for_group(location.group_id)
+    existing_answers = answer_store.filter(answer_ids=group_answer_ids, group_instance=location.group_instance)
+    if existing_answers:
+        return existing_answers[0]['group_instance_id']
+
+    return '-'.join([location.group_id, str(uuid4())])
+
+
+def _get_group_repeat_rule(schema, location):
+    group = schema.get_group(location.group_id)
+
+    for routing_rule in group.get('routing_rules', []):
+        if 'repeat' in routing_rule:
+            repeat_rule = routing_rule['repeat']
+            if repeat_rule['type'] == 'group':
+                return repeat_rule
+
+
+def _get_group_instance_ids(answer_store, group_answer_ids):
+    group_instance_ids = []
+
+    group_instances = 0
+    for answer in list(answer_store.filter(answer_ids=group_answer_ids)):
+        group_instances = max(group_instances, answer['group_instance'])
+
+    for i in range(group_instances + 1):
+        answers = list(answer_store.filter(answer_ids=group_answer_ids, group_instance=i))
+        if answers:
+            group_instance_ids.append(answers[0]['group_instance_id'])
+
+    return group_instance_ids

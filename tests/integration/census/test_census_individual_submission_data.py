@@ -10,6 +10,9 @@ class TestCensusIndividualSubmissionData(IntegrationTestCase):
         actual_downstream_data = self.dumpSubmission()['submission']['data']
         expected_downstream_data = self.get_expected_submission_data()
 
+        for a in actual_downstream_data:
+            del a['group_instance_id']
+
         self.assertCountEqual(actual_downstream_data, expected_downstream_data)
 
     @staticmethod

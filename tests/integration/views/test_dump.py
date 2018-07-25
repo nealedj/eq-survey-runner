@@ -83,6 +83,10 @@ class TestDumpAnswers(IntegrationTestCase):
         # Enable full dictionary diffs on test failure
         self.maxDiff = None
 
+        # Cannot assert on randomly generated IDs
+        for a in actual['answers']:
+            del a['group_instance_id']
+
         # Data in the answer store doesn't seem to be in a consistent order
         # between test runs so we have to compare like this.
         self.assertCountEqual(actual['answers'], expected['answers'])
@@ -171,6 +175,8 @@ class TestDumpSubmission(IntegrationTestCase):
 
         # And the JSON response contains the data I submitted
         actual = json.loads(self.getResponseData())
+
+        del actual['submission']['data'][0]['group_instance_id']
 
         # tx_id and submitted_at are dynamic; so copy them over
         expected = {

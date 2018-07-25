@@ -2,7 +2,8 @@ import unittest
 from werkzeug.datastructures import MultiDict
 from tests.app.app_context_test_case import AppContextTestCase
 
-from app.helpers.form_helper import get_mapped_answers, get_form_for_location, post_form_for_location
+from app.helpers.form_helper import get_mapped_answers, get_form_for_location, post_form_for_location, \
+    get_group_instance_id
 from app.questionnaire.location import Location
 from app.questionnaire.questionnaire_schema import QuestionnaireSchema
 from app.utilities.schema import load_schema_from_params
@@ -161,29 +162,29 @@ class TestFormHelper(AppContextTestCase):
                 {
                     'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'first-name',
-                    'block_id': 'household-composition',
                     'value': 'Joe',
                     'answer_instance': 0,
                 }, {
                     'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'last-name',
-                    'block_id': 'household-composition',
                     'value': 'Bloggs',
                     'answer_instance': 0,
                 }, {
                     'group_id': 'who-lives-here-relationship',
-                    'group_instance': 1,
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'first-name',
-                    'block_id': 'household-composition',
                     'value': 'Jane',
                     'answer_instance': 1,
                 }, {
                     'group_id': 'who-lives-here-relationship',
-                    'group_instance': 1,
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'last-name',
-                    'block_id': 'household-composition',
                     'value': 'Bloggs',
                     'answer_instance': 1,
                 }
@@ -209,22 +210,26 @@ class TestFormHelper(AppContextTestCase):
             answer_store = AnswerStore([
                 {
                     'answer_id': 'first-name',
-                    'block_id': 'household-composition',
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'value': 'Joe',
                     'answer_instance': 0,
                 }, {
                     'answer_id': 'last-name',
-                    'block_id': 'household-composition',
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'value': 'Bloggs',
                     'answer_instance': 0,
                 }, {
                     'answer_id': 'first-name',
-                    'block_id': 'household-composition',
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'value': 'Jane',
                     'answer_instance': 1,
                 }, {
                     'answer_id': 'last-name',
-                    'block_id': 'household-composition',
+                    'group_instance': 0,
+                    'group_instance_id': 'who-lives-here-relationship-0',
                     'value': 'Bloggs',
                     'answer_instance': 1,
                 }
@@ -358,12 +363,14 @@ class TestGetMappedAnswers(unittest.TestCase):
         answer_1 = Answer(
             answer_id='answer2',
             answer_instance=1,
+            group_instance_id='group-1',
             group_instance=1,
             value=25,
         )
         answer_2 = Answer(
             answer_id='answer1',
             answer_instance=1,
+            group_instance_id='group-1',
             group_instance=1,
             value=65,
         )
@@ -375,7 +382,7 @@ class TestGetMappedAnswers(unittest.TestCase):
             'answer1_1': 65
         }
 
-        self.assertEqual(get_mapped_answers(schema, self.store, block_id='block1', group_instance=1), expected_answers)
+        self.assertEqual(get_mapped_answers(schema, self.store, block_id='block1', group_instance_id='group-1'), expected_answers)
 
     def test_returns_ordered_map(self):
 
@@ -403,6 +410,7 @@ class TestGetMappedAnswers(unittest.TestCase):
 
         answer = Answer(
             answer_id='answer1',
+            group_instance_id='group-1',
             group_instance=1,
             value=25,
         )
@@ -416,7 +424,7 @@ class TestGetMappedAnswers(unittest.TestCase):
 
         self.assertEqual(len(self.store.answers), 100)
 
-        mapped = get_mapped_answers(schema, self.store, block_id='block1', group_instance=1)
+        mapped = get_mapped_answers(schema, self.store, block_id='block1', group_instance_id='group-1')
 
         for key, _ in mapped.items():
             pos = key.find('_')
@@ -426,3 +434,75 @@ class TestGetMappedAnswers(unittest.TestCase):
             self.assertGreater(instance, last_instance)
 
             last_instance = instance
+
+    def test_get_group_instance_id(self):
+        questionnaire = {
+            'sections': [{
+                'id': 'section1',
+                'groups': [
+                    {
+                        'id': 'group1',
+                        'blocks': [
+                            {
+                                'id': 'block1',
+                                'questions': [{
+                                    'id': 'question1',
+                                    'answers': [
+                                        {
+                                            'id': 'answer1',
+                                            'type': 'TextArea'
+                                        }
+                                    ]
+                                }]
+                            }
+                        ]
+                    },
+                    {
+                        'id': 'group2',
+                        'blocks': [
+                            {
+                                'id': 'block2',
+                                'questions': [{
+                                    'id': 'question2',
+                                    'answers': [
+                                        {
+                                            'id': 'answer2',
+                                            'type': 'TextArea'
+                                        }
+                                    ]
+                                }]
+                            }
+                        ],
+                        'routing_rules': [{
+                            'repeat': {
+                                'type': 'group',
+                                'group_ids': ['group1']
+                            }
+                        }]
+                    }
+                ]
+            }]
+        }
+        schema = QuestionnaireSchema(questionnaire)
+
+        answer_1 = Answer(
+            answer_id='answer1',
+            group_instance_id='group1-aaa',
+            group_instance=0,
+            value=25,
+        )
+        answer_2 = Answer(
+            answer_id='answer1',
+            group_instance_id='group1-bbb',
+            group_instance=1,
+            value=65,
+        )
+
+        self.store.add(answer_1)
+        self.store.add(answer_2)
+
+        location = Location('group2', 0, 'block2')
+        self.assertEqual(get_group_instance_id(schema, self.store, location), 'group1-aaa')
+
+        location = Location('group2', 1, 'block2')
+        self.assertEqual(get_group_instance_id(schema, self.store, location), 'group1-bbb')

@@ -631,6 +631,7 @@ class TestNavigation(AppContextTestCase):
         answer_1 = Answer(
             value='Contents',
             group_instance=0,
+            group_instance_id='group-0',
             answer_instance=0,
             answer_id='insurance-type-answer'
         )
@@ -645,6 +646,7 @@ class TestNavigation(AppContextTestCase):
         change_answer = Answer(
             value='Buildings',
             group_instance=0,
+            group_instance_id='group-0',
             answer_instance=0,
             answer_id='insurance-type-answer'
         )

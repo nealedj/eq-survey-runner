@@ -49,6 +49,10 @@ class TestRepeatingRelationship(IntegrationTestCase):
             answer for answer in self.dumpAnswers()['answers']
             if answer['answer_id'] == 'who-is-related'
         ]
+
+        for a in relationship_answers:
+            del a['group_instance_id']
+
         expected_relationship_answers = [
             {
                 'answer_id': 'who-is-related',

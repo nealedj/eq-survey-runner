@@ -9,6 +9,9 @@ class TestCensusHouseholdSubmissionData(IntegrationTestCase):
         # Only verifying 'data'
         actual_downstream_data = self.dumpSubmission()['submission']['data']
 
+        for a in actual_downstream_data:
+            del a['group_instance_id']
+
         expected_downstream_data = self.get_expected_submission_data()
 
         self.assertCountEqual(actual_downstream_data, expected_downstream_data)
