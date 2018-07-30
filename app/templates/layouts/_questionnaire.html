@@ -3,11 +3,6 @@
 
 {% block page_title %}{{page_title}}{% endblock %}
 
-{% block subheader %}
-    {% include theme('partials/feedback_call_to_action.html') %}
-    {% include theme('partials/feedback/expandable_inline.html') %}
-    {{super()}}
-{% endblock subheader %}
 
 {% set block = content.block %}
 {% set form = content.form %}

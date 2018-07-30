@@ -1,5 +1,5 @@
-<!doctype html>
-{% set cdn_hash = "v1.4.4" %}
+  <!doctype html>
+{% set cdn_hash = "5d95da5" %}
 {% set cdn_url_prefix = "https://cdn.ons.gov.uk/sdc/"~cdn_hash %}
 <!--[if lt IE 7]>      <html lang="en-gb" dir="ltr" class="no-js lt-ie10 lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html lang="en-gb" dir="ltr" class="no-js lt-ie10 lt-ie9 lt-ie8"> <![endif]-->
@@ -66,7 +66,7 @@
     </script>
   </head>
 
-  <body>
+  <body>  
 
     {% if request.args.get('grid_debug') == 'true' and config['DEBUG'] == true %}
       {% include 'partials/grid-overlay.html' %}
@@ -80,11 +80,12 @@
           <a class="skip__link" href="#main">{{ _("Skip to content") }}</a>
         </div>
 
-        <header class="page__header">{% block header %}
-          {% include theme('partials/header2.html') %}
-          {% include theme('partials/topbar.html') %}
-          {% endblock %}</header>
+        {% block header %}
+          {% include theme('partials/header.html') %}
+
+        {% endblock %}
         {% block subheader_container %}
+        {% if previous_location or navigation %}
         <div class="page__subheader">
           <div class="container">
             {% block subheader %}
@@ -97,6 +98,7 @@
             {% endblock subheader %}
           </div>
         </div>
+        {% endif %}
         {% endblock subheader_container %}
         <div class="page__container container">
           {% block content %}

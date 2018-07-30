@@ -1,29 +1,27 @@
-<div class="container">
-    <div class="header">
-        <div class="logo header__logo">
-            {% block logo %}
-            {% set logo_cdn = cdn_url_prefix~"/img/logo.svg" %}
-            <img src="{{ logo_cdn }}" alt="Office for National Statistics"
-                 class="logo__img"/>
-            {% endblock logo %}
-        </div>
-        <div class="info header__info" role="contentinfo">
-            <h3 class="info__title venus" id="survey-help">{{ _("Survey Help") }}</h3>
-            <div class="info__tel">
-                <a class="info__link" href="tel:03001234931" aria-describedby="survey-help">0300 1234 931</a>
+<header class="header u-mb-s">
+    <div class="header__top" role="banner">
+        <div class="container">
+            <div class="grid grid--gutterless">
+                <div class="grid__col col-6@s">
+                {% block logo %}
+                {% set logo_cdn_print = cdn_url_prefix~"/img/ons-logo-black-en.svg" %}
+                {% set logo_cdn_web = cdn_url_prefix~"/img/ons-logo-pos.svg" %}
+                    <div class="logo">
+                        <img src="{{ logo_cdn_print }}" alt="Office for National Statistics logo" class="logo__img header__logo--print">
+                        <img src="{{ logo_cdn_web }}" alt="Office for National Statistics logo" class="logo__img header__logo print__hidden">
+                    </div>
+                {% endblock logo %}
+                </div>
             </div>
-            {% if metadata %}
-            <div>
-                <dl class="info__list">
-                    <dt class="info__dt first"><abbr title='{{ _("Survey identification code") }}'>{{ _("ID") }}:</abbr></dt>
-                    <dd class="info__dd">{{ survey_id or _("N/A") }}</dd>
-                    <dt class="info__dt">Period:</dt>
-                    <dd class="info__dd">{{ metadata.period_str or _("N/A") }}</dd>
-                    <dt class="info__dt"><abbr title="Reference number">Ref:</abbr></dt>
-                    <dd class="info__dd last">{{ metadata.ru_ref or _("N/A") }}</dd>
-                </dl>
-            </div>
-            {% endif %}
         </div>
     </div>
-</div>
+    <div class="header__main">
+        <div class="container">
+            <div class="grid grid--gutterless grid--align-mid u-cf">
+                <div class="grid__col">
+                    <h1 class="header__title ">{{ survey_title }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
