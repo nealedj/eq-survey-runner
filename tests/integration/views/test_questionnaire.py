@@ -521,7 +521,7 @@ class TestQuestionnaire(IntegrationTestCase): # pylint: disable=too-many-public-
                 value='2016-03-12'
             ), Answer(
                 group_instance=1,
-                group_instance_id='group-0',
+                group_instance_id='group-1',
                 answer_id='date-of-birth-answer',
                 answer_instance=0,
                 value='2018-01-01'

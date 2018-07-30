@@ -508,10 +508,10 @@ class TestRules(AppContextTestCase):  # pylint: disable=too-many-public-methods
 
         self.assertEqual(evaluate_repeat(schema, repeat, answer_store, answer_on_path), 1)
 
-        answer_store.add(Answer(answer_id='my_answer', value='Not Done', group_instance=0))
+        answer_store.add(Answer(answer_id='my_answer', value='Not Done', group_instance=0, group_instance_id='group-1-0'))
         self.assertEqual(evaluate_repeat(schema, repeat, answer_store, answer_on_path), 2)
 
-        answer_store.add(Answer(answer_id='my_answer', value='Done', group_instance=1))
+        answer_store.add(Answer(answer_id='my_answer', value='Done', group_instance=1, group_instance_id='group-1-1'))
         self.assertEqual(evaluate_repeat(schema, repeat, answer_store, answer_on_path), 2)
 
     def test_should_repeat_for_answer_answer_value(self):
@@ -839,11 +839,13 @@ class TestRules(AppContextTestCase):  # pylint: disable=too-many-public-methods
         answer_store.add(Answer(
             answer_id=answer_group_id,
             group_instance=0,
+            group_instance_id='group-1-0',
             value=10,
         ))
         answer_store.add(Answer(
             answer_id=answer_group_id,
             group_instance=1,
+            group_instance_id='group-1-1',
             value=20,
         ))
 
