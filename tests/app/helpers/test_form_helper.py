@@ -160,28 +160,24 @@ class TestFormHelper(AppContextTestCase):
 
             answer_store = AnswerStore([
                 {
-                    'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
                     'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'first-name',
                     'value': 'Joe',
                     'answer_instance': 0,
                 }, {
-                    'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
                     'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'last-name',
                     'value': 'Bloggs',
                     'answer_instance': 0,
                 }, {
-                    'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
                     'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'first-name',
                     'value': 'Jane',
                     'answer_instance': 1,
                 }, {
-                    'group_id': 'who-lives-here-relationship',
                     'group_instance': 0,
                     'group_instance_id': 'who-lives-here-relationship-0',
                     'answer_id': 'last-name',

@@ -43,8 +43,7 @@ class TestQuestionnaire(IntegrationTestCase): # pylint: disable=too-many-public-
             'total-retail-turnover-answer': '1000',
         }
 
-        with self._application.test_request_context(), patch('app.helpers.form_helper.uuid4') as uuid:
-            uuid.return_value = '1'
+        with self._application.test_request_context(), patch('app.helpers.form_helper.uuid4', return_value='1'):
             update_questionnaire_store_with_form_data(self.question_store, location, form_data, schema)
 
         self.assertEqual(self.question_store.completed_blocks, [location])
@@ -68,8 +67,7 @@ class TestQuestionnaire(IntegrationTestCase): # pylint: disable=too-many-public-
             'answer': None
         }
 
-        with self._application.test_request_context(), patch('app.helpers.form_helper.uuid4') as uuid:
-            uuid.return_value = '1'
+        with self._application.test_request_context(), patch('app.helpers.form_helper.uuid4', return_value='1'):
             update_questionnaire_store_with_form_data(self.question_store, location, form_data, schema)
 
         self.assertEqual(self.question_store.completed_blocks, [location])

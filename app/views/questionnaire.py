@@ -670,7 +670,7 @@ def _get_block_json(current_location, schema, answer_store, metadata):
 
 def _get_schema_context(full_routing_path, location, metadata, answer_store, schema):
     answer_ids_on_path = get_answer_ids_on_routing_path(schema, full_routing_path)
-    group_instance_id = get_group_instance_id(g.schema, answer_store, location) if location else None
+    group_instance_id = get_group_instance_id(schema, answer_store, location) if location else None
 
     return build_schema_context(metadata=metadata,
                                 schema=schema,

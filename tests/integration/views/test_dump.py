@@ -1,5 +1,6 @@
 import json
 
+from mock import patch
 from werkzeug.datastructures import MultiDict
 
 from tests.integration.integration_test_case import IntegrationTestCase
@@ -53,7 +54,8 @@ class TestDumpAnswers(IntegrationTestCase):
         self.launchSurvey('test', 'radio_mandatory_with_mandatory_other', roles=['dumper'])
 
         # When I submit an answer
-        self.post(post_data={'radio-mandatory-answer': 'Toast'})
+        with patch('app.helpers.form_helper.uuid4', side_effect=range(10)):
+            self.post(post_data={'radio-mandatory-answer': 'Toast'})
 
         # And I attempt to dump the answer store
         self.get('/dump/answers')
@@ -69,12 +71,14 @@ class TestDumpAnswers(IntegrationTestCase):
                     'value': '',
                     'answer_instance': 0,
                     'group_instance': 0,
+                    'group_instance_id': 'radio-1',
                     'answer_id': 'other-answer-mandatory',
                 },
                 {
                     'value': 'Toast',
                     'answer_instance': 0,
                     'group_instance': 0,
+                    'group_instance_id': 'radio-1',
                     'answer_id': 'radio-mandatory-answer',
                 }
             ]
@@ -82,10 +86,6 @@ class TestDumpAnswers(IntegrationTestCase):
 
         # Enable full dictionary diffs on test failure
         self.maxDiff = None
-
-        # Cannot assert on randomly generated IDs
-        for a in actual['answers']:
-            del a['group_instance_id']
 
         # Data in the answer store doesn't seem to be in a consistent order
         # between test runs so we have to compare like this.
@@ -165,7 +165,8 @@ class TestDumpSubmission(IntegrationTestCase):
         self.launchSurvey('test', 'radio_mandatory', roles=['dumper'])
 
         # When I submit an answer
-        self.post(post_data={'radio-mandatory-answer': 'Coffee'})
+        with patch('app.helpers.form_helper.uuid4', side_effect=range(10)):
+            self.post(post_data={'radio-mandatory-answer': 'Coffee'})
 
         # And I attempt to dump the submission payload
         self.get('/dump/submission')
@@ -175,8 +176,6 @@ class TestDumpSubmission(IntegrationTestCase):
 
         # And the JSON response contains the data I submitted
         actual = json.loads(self.getResponseData())
-
-        del actual['submission']['data'][0]['group_instance_id']
 
         # tx_id and submitted_at are dynamic; so copy them over
         expected = {
@@ -198,6 +197,7 @@ class TestDumpSubmission(IntegrationTestCase):
                         'answer_id': 'radio-mandatory-answer',
                         'answer_instance': 0,
                         'group_instance': 0,
+                        'group_instance_id': 'radio-1',
                         'value': 'Coffee',
                     },
                 ],
