@@ -225,7 +225,7 @@ def get_number_of_repeats(group, schema, routing_path, answer_store):
     if repeating_rule:
         answer_ids_on_path = get_answer_ids_on_routing_path(
             schema, routing_path)
-        return evaluate_repeat(repeating_rule, answer_store, answer_ids_on_path)
+        return evaluate_repeat(schema, repeating_rule, answer_store, answer_ids_on_path)
 
     return 1
 

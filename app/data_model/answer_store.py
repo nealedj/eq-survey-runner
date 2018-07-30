@@ -19,7 +19,7 @@ class Answer:
     def matches(self, answer):
         """
         Check to see if two answers match.
-        Two answers are considered to match if they share the same answer_id, answer_instance, group_instance_id and group_instance.
+        Two answers are considered to match if they share the same answer_id, answer_instance and group_instance_id.
 
         :param answer: An answer to compare
         :return: True if both answers match, otherwise False.

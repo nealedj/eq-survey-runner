@@ -370,7 +370,7 @@ class TestNavigation(AppContextTestCase):
         answer_1 = Answer(
             value=2,
             group_instance=0,
-            group_instance_id = 'group-1-0',
+            group_instance_id='group-1-0',
             answer_id='extra-cover-answer',
             answer_instance=0
 
