@@ -19,7 +19,7 @@ def build_schema_context(metadata, schema, answer_store, answer_ids_on_path, gro
         'answers': _build_answers(answer_store, schema, answer_ids_on_path),
         'group_instances': _build_group_instances(answer_store, answer_ids_on_path),
         'group_instance': group_instance,
-        'group_instance_id': group_instance_id
+        'group_instance_id': group_instance_id,
     }
 
 

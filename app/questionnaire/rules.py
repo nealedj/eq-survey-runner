@@ -127,7 +127,7 @@ def evaluate_repeat(schema, repeat_rule, answer_store, answer_ids_on_path):
         repeat_functions = {
             'answer_value': _get_answer_value,
             'answer_count': len,
-            'answer_count_minus_one': _get_answer_count_minus_one
+            'answer_count_minus_one': _get_answer_count_minus_one,
         }
 
         repeat_index = repeat_rule['answer_id']
